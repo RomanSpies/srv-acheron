@@ -1,7 +1,7 @@
 ---
 This is supposed to be a minimalistic first release of the code powering my personal website. Feel free to contact me about any questions you may have.
    
-
+```
    - cd $CI_PROJECT_DIR/public_api_website
     - mkdir requirements
     - cd requirements
@@ -29,4 +29,4 @@ This is supposed to be a minimalistic first release of the code powering my pers
     - ninja
     - ninja install    
 
-
+```
