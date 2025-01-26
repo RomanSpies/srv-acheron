@@ -58,10 +58,21 @@ Task<void> ScrobbleUpdate::receiveUpdate(HttpRequestPtr req, std::function<void(
 		co_return;
 	}
 
+
 	const Json::Value& scrobbleValue = *scrobbleRequest;
+	std::string username = scrobbleValue["user"].asString();
+	if (username != navidromeUserForScrobble)
+	{
+		LOG_WARN << "Scrobble request was made, but does not match designated user. Skipping....";
+		resp->setStatusCode(k204NoContent);
+		callback(resp);
+		co_return;
+	}
+
 	std::string songname = scrobbleValue["song"].asString();
 	std::string albumname = scrobbleValue["album"].asString();
 	std::string artistname = scrobbleValue["artist"].asString();
+	int timeoutduration = static_cast<int>(std::round(1.1 * scrobbleValue["tracklength"].asInt() + 5));
 	std::string album_url;
 	std::string album_cover_url;
 
@@ -136,12 +147,12 @@ Task<void> ScrobbleUpdate::receiveUpdate(HttpRequestPtr req, std::function<void(
 	websocketEventQueue.write(commitValPtr);
 	LOG_INFO << "New song placed into event Queue";
 
-	eventBase_.runInEventBaseThread([this]()
+	eventBase_.runInEventBaseThread([this, timeoutduration]()
 		{
 			if (timer_)
 			{
 				timer_->cancelTimeout();
-				timer_->scheduleTimeout(std::chrono::seconds(420));
+				timer_->scheduleTimeout(std::chrono::seconds(timeoutduration));
 			}
 		});
 

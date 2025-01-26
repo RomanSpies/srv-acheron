@@ -1,5 +1,6 @@
 ---
 This is supposed to be a minimalistic first release of the code powering my personal website. Feel free to contact me about any questions you may have.
+A full blog post with regards to functionality and usage of this code will be published soon on my ![personal website](https://rospies.dev)
    
 ```
    - cd $CI_PROJECT_DIR/public_api_website

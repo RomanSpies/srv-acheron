@@ -46,5 +46,7 @@ extern std::string currentSongName;
 
 extern std::string apiKey;
 
+extern std::string navidromeUserForScrobble;
 
+extern std::string matrixIdForPresenceUpdates;
 
