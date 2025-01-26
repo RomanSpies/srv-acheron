@@ -27,7 +27,7 @@ Task<void> MatrixPresenceReceiver::deliveryEndpoint(HttpRequestPtr req, std::fun
 	eventRef["user"] = userPresenceUpdateData["user_id"];
 	eventRef["presence"] = userPresenceUpdateData["presence"];
 	eventRef["last_active"] = userPresenceUpdateData["last_active"];
-	eventRef["status_msg"] = userPresenceUpdateData["last_active"];
+	eventRef["status_msg"] = userPresenceUpdateData["status_msg"];
 
 	synapsePresenceQueue.write(eventPtr);
 

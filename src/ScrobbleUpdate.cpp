@@ -4,10 +4,12 @@
 
 ScrobbleUpdate::ScrobbleUpdate()
 {
-	
+	auto rawbase = eventBase_.getLibeventMethod();
+	LOG_INFO << "Libevent base method: " << rawbase;
 
 	timer_ = folly::AsyncTimeout::make(eventBase_, [this]() noexcept
 	{
+		LOG_INFO << "Switching to idle playback state...";
 		jsonMutex.lock_shared();
 		std::shared_ptr<Json::Value> corrected = std::make_shared<Json::Value>(*currentJsonResponse);
 		jsonMutex.unlock_shared();
@@ -72,7 +74,7 @@ Task<void> ScrobbleUpdate::receiveUpdate(HttpRequestPtr req, std::function<void(
 	std::string songname = scrobbleValue["song"].asString();
 	std::string albumname = scrobbleValue["album"].asString();
 	std::string artistname = scrobbleValue["artist"].asString();
-	int timeoutduration = static_cast<int>(std::round(1.1 * scrobbleValue["tracklength"].asInt() + 5));
+	long long timeoutduration = static_cast<long long>(std::round(1.1 * scrobbleValue["tracklength"].asInt() + 5)) * 1000000;
 	std::string album_url;
 	std::string album_cover_url;
 
@@ -152,7 +154,8 @@ Task<void> ScrobbleUpdate::receiveUpdate(HttpRequestPtr req, std::function<void(
 			if (timer_)
 			{
 				timer_->cancelTimeout();
-				timer_->scheduleTimeout(std::chrono::seconds(timeoutduration));
+				timer_->scheduleTimeoutHighRes(std::chrono::microseconds(timeoutduration));
+				LOG_INFO << "Timeout scheduled - microseconds remaining: " << timeoutduration;
 			}
 		});
 
